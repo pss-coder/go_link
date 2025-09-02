@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go_short_link</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; }
+        form { margin-bottom: 1em; }
+        input[type="url"] { width: 300px; padding: 0.5em; }
+        button { padding: 0.5em 1em; }
+        #result { margin-top: 1em; color: green; }
+    </style>
+</head>
+<body>
+    <h1>Go_short_link</h1>
+    <form id="shortenForm">
+        <label for="urlInput">URL:</label>
+        <input type="url" id="urlInput" name="url" required placeholder="Enter URL to shorten">
+        <button type="submit">Submit</button>
+    </form>
+    <div id="result"></div>
+    <script>
+        document.getElementById('shortenForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const link = document.getElementById('urlInput').value;
+            // Example: POST to /shorten endpoint (adjust as needed)
+            fetch('/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ link })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data)
+
+                // get current url
+                let currentUrl = window.location.href;
+                console.log(currentUrl); 
+
+                document.getElementById('result').textContent = data.shorten_link ? `Short link: ${data.shorten_link}` : 'Error creating short link.';
+            })
+            .catch(() => {
+                document.getElementById('result').textContent = 'Error connecting to server.';
+            });
+        });
+    </script>
+</body>
+</html>
