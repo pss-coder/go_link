@@ -7,6 +7,16 @@ import (
 	"net/http"
 )
 
+type shorten struct {
+	short_link_id string
+	original_link string
+}
+
+// id to shorten struct
+// uint -> 0-255
+var linkMap = make(map[int]shorten)
+var start = 11157 // something like our pointer
+
 func main() {
 	port := 8085
 
@@ -46,8 +56,36 @@ func shortenLinkHandler(w http.ResponseWriter, r *http.Request) {
 
 	// 3. TODO: our process for mapping to shorten link :)
 
+	// convert start to base 62
+	const charset = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	var result string
+
+	base := 62 // our base to convert to
+	num := start
+
+	for num > 0 {
+		quotient := num / base
+		remainder := num % base
+
+		// convert remainder to base 62
+		res := string(charset[remainder])
+		result = res + result
+
+		//fmt.Printf("numb %d \n", num)
+		// fmt.Printf("quotient: %d, remainder: %d ", quotient, remainder)
+		num = quotient
+	}
+	fmt.Println(result)
+
+	linkMap[start] = shorten{
+		short_link_id: result,
+		original_link: link,
+	}
+
+	start++ // increment pointer
+
 	// 4. Return Shorten Link
-	jsonBody := fmt.Sprintf(`{"shorten_link":"%s"}`, link)
+	jsonBody := fmt.Sprintf(`{"shorten_link":"%s"}`, result)
 	fmt.Fprintf(w, "%s", jsonBody)
 }
 
