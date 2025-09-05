@@ -17,6 +17,8 @@ type shorten struct {
 var linkMap = make(map[int]shorten)
 var start = 11157 // something like our pointer
 
+var shortIdmap = make(map[string]int)
+
 func main() {
 	port := 8085
 
@@ -26,6 +28,8 @@ func main() {
 
 	// handle link shortener
 	http.HandleFunc("/shorten", shortenLinkHandler)
+
+	http.HandleFunc("/redirect", shortLinkHandler)
 
 	// run server
 	fmt.Printf("port running on %d\n", port)
@@ -82,6 +86,8 @@ func shortenLinkHandler(w http.ResponseWriter, r *http.Request) {
 		original_link: link,
 	}
 
+	shortIdmap[result] = start
+
 	start++ // increment pointer
 
 	// 4. Return Shorten Link
@@ -90,4 +96,33 @@ func shortenLinkHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Get Method
-// func retrieveLink() {}
+func shortLinkHandler(w http.ResponseWriter, r *http.Request) {
+	// 1. Must be a Get Request
+	// Param - ID
+	if r.Method != http.MethodGet {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	id := r.URL.Query().Get("short_link")
+	if id == "" {
+		fmt.Fprintf(w, "No ID")
+	}
+
+	// we get the id pointer from the shorten id
+	ref, isPresent := shortIdmap[id]
+	if !isPresent {
+		// display error
+		fmt.Fprintf(w, "Not available to redirect")
+	}
+	data, isLinksAvailable := linkMap[ref]
+	if !isLinksAvailable {
+		fmt.Fprintf(w, "Not available to redirect")
+	}
+	original_link := data.original_link
+	fmt.Printf("Redirecting %s to %s \n", id, original_link)
+	// 3. if found, we redirect, else handle error
+	//localhost:8085/redirect?short_link=2TX
+	http.Redirect(w, r, original_link, http.StatusTemporaryRedirect) // TODO: set to permatnely move for future
+
+}
