@@ -29,7 +29,7 @@ func main() {
 	// handle link shortener
 	http.HandleFunc("/shorten", shortenLinkHandler)
 
-	http.HandleFunc("/redirect", shortLinkHandler)
+	http.HandleFunc("/{id}", shortLinkHandler)
 
 	// run server
 	fmt.Printf("port running on %d\n", port)
@@ -104,7 +104,8 @@ func shortLinkHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id := r.URL.Query().Get("short_link")
+	// id := r.URL.Query().Get("short_link")
+	id := r.PathValue("id")
 	if id == "" {
 		fmt.Fprintf(w, "No ID")
 	}
@@ -114,11 +115,15 @@ func shortLinkHandler(w http.ResponseWriter, r *http.Request) {
 	if !isPresent {
 		// display error
 		fmt.Fprintf(w, "Not available to redirect")
+		return
 	}
 	data, isLinksAvailable := linkMap[ref]
+
 	if !isLinksAvailable {
 		fmt.Fprintf(w, "Not available to redirect")
+		return
 	}
+
 	original_link := data.original_link
 	fmt.Printf("Redirecting %s to %s \n", id, original_link)
 	// 3. if found, we redirect, else handle error
