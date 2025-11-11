@@ -23,8 +23,8 @@ func main() {
 	port := 8085
 
 	// handle index.html
-	fileserver := http.FileServer(http.Dir("./static"))
-	http.Handle("/", fileserver)
+	// fileserver := http.FileServer(http.Dir("./static"))
+	// http.Handle("/", fileserver)
 
 	// handle link shortener
 	http.HandleFunc("/shorten", shortenLinkHandler)
