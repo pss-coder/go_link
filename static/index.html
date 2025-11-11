@@ -38,7 +38,7 @@
                 let currentUrl = window.location.href;
                 console.log(currentUrl); 
 
-                document.getElementById('result').textContent = data.shorten_link ? `Short link: ${data.shorten_link}` : 'Error creating short link.';
+                document.getElementById('result').textContent = data.shorten_link ? `Link: ${currentUrl}redirect?short_link=${data.shorten_link}` : 'Error creating short link.';
             })
             .catch(() => {
                 document.getElementById('result').textContent = 'Error connecting to server.';
