@@ -30,6 +30,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
+import type { Link } from "@/app/dashboard/Dashboard"
 
 // const data = {
 //   user: {
@@ -148,7 +149,7 @@ import {
 //   // ],
 // }
 
-export function AppSidebar({ data, onSelectView, selectedView, onAddLink, ...props }: React.ComponentProps<typeof Sidebar> & { data: string[], onSelectView?: (view: string) => void, selectedView?: string, onAddLink?: (link: string) => void }) {
+export function AppSidebar({ data, onSelectView, selectedView, onAddLink, ...props }: React.ComponentProps<typeof Sidebar> & { data: Link[], onSelectView?: (view: string) => void, selectedView?: string, onAddLink?: (link: string) => void }) {
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
